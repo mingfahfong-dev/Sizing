@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sizing Preview v2</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23e8741e'/%3E%3Cpath d='M12 16h40l-3 8H15z' fill='%23fff'/%3E%3Cpath d='M14 29h36l-3 8H17z' fill='%23fff3e0'/%3E%3Cpath d='M16 42h32l-3 8H19z' fill='%23fff'/%3E%3Ccircle cx='24' cy='13' r='2.5' fill='%23fff3e0'/%3E%3Ccircle cx='34' cy='11' r='3.5' fill='%23fff3e0'/%3E%3Ccircle cx='43' cy='13' r='2' fill='%23fff3e0'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23e8741e'/%3E%3Cpath d='M12 16h40l-3 8H15z' fill='%23fff'/%3E%3Cpath d='M14 29h36l-3 8H17z' fill='%23fff3e0'/%3E%3Cpath d='M16 42h32l-3 8H19z' fill='%23fff'/%3E%3Ccircle cx='24' cy='13' r='2.5' fill='%23fff3e0'/%3E%3Ccircle cx='34' cy='11' r='3.5' fill='%23fff3e0'/%3E%3Ccircle cx='43' cy='13' r='2' fill='%23fff3e0'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6f7; --panel:#fff; --ink:#1b2127; --muted:#5d6770; --line:#dde1e5; --soft:#eef0f2;
+  --brand:#e8741e; --up:#b83a14; --down:#2f6f9f; --mod:#fff1e3; --warnbg:#fff4e5; --warnink:#8a4b08;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14181c; --panel:#1c2126; --ink:#e7eaed; --muted:#9aa4ad; --line:#2d343b; --soft:#232a30;
+    --up:#f08a5d; --down:#7fb6e0; --mod:#3a2814; --warnbg:#3a2a14; --warnink:#f5c98a;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14181c; --panel:#1c2126; --ink:#e7eaed; --muted:#9aa4ad; --line:#2d343b; --soft:#232a30;
+  --up:#f08a5d; --down:#7fb6e0; --mod:#3a2814; --warnbg:#3a2a14; --warnink:#f5c98a;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums}
+.wrap{max-width:1320px;margin:0 auto;padding:24px 20px 48px}
+header{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+header svg{flex:none}
+h1{font-size:22px;line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+.ver{font-size:12px;font-weight:600;color:var(--brand);border:1px solid var(--brand);border-radius:4px;padding:1px 6px;vertical-align:3px}
+.vfoot{margin-top:10px;font-size:12px;color:var(--muted)}
+.sub{color:var(--muted);font-size:13.5px;margin:2px 0 0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:18px}
+h2{font-size:15px;margin:0;font-weight:600}
+textarea{width:100%;min-height:110px;resize:vertical;border:1px solid var(--line);border-radius:8px;background:var(--soft);color:var(--ink);padding:10px;font:13px/1.4 Consolas,"SF Mono",Menlo,monospace}
+button{font:inherit;font-size:14px;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:7px 13px;cursor:pointer}
+button:hover{border-color:var(--brand)}
+button.primary{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row.end{justify-content:space-between}
+.muted{color:var(--muted);font-size:13px}
+.err{color:var(--up);font-size:13.5px;margin-top:8px}
+.hidden{display:none!important}
+.warn{background:var(--warnbg);color:var(--warnink);border-radius:8px;padding:8px 12px;font-size:13.5px;margin-top:10px}
+
+/* controls */
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.ctl{border:1px solid var(--line);border-radius:9px;padding:12px}
+.ctl .k{font-size:13px;font-weight:600;margin-bottom:8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:6px 14px;background:var(--panel)}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--brand);color:#fff;font-weight:600}
+.ctl .hint{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.45}
+.ctl .hint b{color:var(--ink);font-weight:600}
+
+/* tables */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:9px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;vertical-align:top}
+th{background:var(--soft);font-weight:600;font-size:12px}
+th.grp{text-align:center;font-size:11.5px;color:var(--muted);font-weight:500;border-bottom:0;padding-bottom:0}
+th.l,td.l{text-align:left}
+tbody tr:last-child td{border-bottom:0}
+tr.comp td{background:var(--soft);font-weight:600}
+td input{width:66px;text-align:right;border:1px solid transparent;border-radius:5px;background:transparent;color:var(--ink);font:13px "IBM Plex Sans",system-ui,sans-serif;font-variant-numeric:tabular-nums;padding:3px 5px}
+td input:hover{border-color:var(--line)}
+td input:focus{border-color:var(--brand);background:var(--panel)}
+td input.mod{background:var(--mod);border-color:var(--brand);color:var(--brand);font-weight:600}
+td.calc{font-style:italic;color:var(--muted);font-weight:500}
+td .was{display:block;font-size:11px;color:var(--muted);font-weight:400}
+.d.up{color:var(--up)} .d.down{color:var(--down)}
+.role{display:inline-block;font-size:11px;padding:0 6px;border-radius:4px;border:1px solid var(--line);color:var(--muted);font-weight:500;margin-left:6px}
+.role.c{border-color:var(--brand);color:var(--brand)}
+.sepL{border-left:2px solid var(--line)}
+/* chart */
+.chartrow{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:18px;align-items:start}
+.chart svg{width:100%;height:auto;display:block}
+.legend{font-size:13px;line-height:1.9}
+.legend i{display:inline-block;width:22px;height:0;border-top:3px solid var(--brand);vertical-align:4px;margin-right:6px}
+.legend i.p{border-top:2px dashed var(--muted)}
+select{font:inherit;font-size:14px;padding:6px 8px;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:var(--ink);max-width:100%}
+.chk{display:flex;gap:6px;align-items:center;font-size:13.5px;color:var(--muted)}
+.notes{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.6}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:8px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+@media (max-width:860px){.controls,.chartrow{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#e8741e"/><path d="M12 16h40l-3 8H15z" fill="#fff"/><path d="M14 29h36l-3 8H17z" fill="#fff3e0"/><path d="M16 42h32l-3 8H19z" fill="#fff"/><circle cx="24" cy="13" r="2.5" fill="#fff3e0"/><circle cx="34" cy="11" r="3.5" fill="#fff3e0"/><circle cx="43" cy="13" r="2" fill="#fff3e0"/></svg>
+  <div>
+    <h1>Sizing preview <span class="ver">v2</span></h1>
+    <p class="sub">Paste the Sizing tab from CCLAS, edit sieve masses or the calculation settings, and see how the size distribution moves.</p>
+  </div>
+</header>
+
+<section class="panel" id="pastePanel">
+  <h2 style="margin-bottom:10px">Paste sizing data</h2>
+  <textarea id="paste" spellcheck="false" placeholder="Copy the Sizing rows from Excel (header row recommended) and paste here"></textarea>
+  <div class="row" style="margin-top:10px">
+    <button class="primary" id="loadBtn">Load data</button>
+    <button id="exampleBtn">Load example (34816 YNDF cargo)</button>
+    <span class="muted">Columns A to AQ, as laid out in the Sizing tab</span>
+  </div>
+  <div class="err" id="err"></div>
+</section>
+
+<section class="panel hidden" id="loadedPanel">
+  <div class="row end"><span id="loadedInfo"></span>
+    <div class="row"><button id="resetEdits">Reset all edits</button><button id="repasteBtn">Paste new data</button></div></div>
+  <div id="groupInfo" class="muted" style="margin-top:6px"></div>
+</section>
+
+<section class="panel hidden" id="ctlPanel">
+  <div class="controls">
+    <div class="ctl">
+      <div class="k">% calculated against</div>
+      <div class="seg" id="segPct"><button data-v="WT" aria-pressed="true">WT TOTAL (CCLAS)</button><button data-v="WGT" aria-pressed="false">WGT</button></div>
+      <div class="hint" id="hintPct"></div>
+    </div>
+    <div class="ctl">
+      <div class="k">Composite fines scaled by</div>
+      <div class="seg" id="segScale"><button data-v="CAL" aria-pressed="true">CAL &lt; 40</button><button data-v="SPLIT" aria-pressed="false">SPLIT &lt; 40</button></div>
+      <div class="hint" id="hintScale"></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel hidden" id="massPanel">
+  <div class="row end" style="margin-bottom:10px"><h2>Sieve masses (g)</h2><span class="muted">Click any mass to edit it. Edited cells turn orange. Composite rows are calculated from their sub-samples.</span></div>
+  <div class="tablewrap"><table id="mass"><thead></thead><tbody></tbody></table></div>
+</section>
+
+<section class="panel hidden" id="resPanel">
+  <div class="row end" style="margin-bottom:10px">
+    <h2>Results (%)</h2>
+    <div class="row"><label class="chk"><input type="checkbox" id="showEmpty"> Show rows without data</label><button class="primary" id="copyBtn">Copy results</button></div>
+  </div>
+  <div class="tablewrap"><table id="res"><thead></thead><tbody></tbody></table></div>
+  <div class="notes">
+    Each cell shows the recalculated value. When it differs from the pasted CCLAS value (at 2 dp), the original and the change are shown underneath.
+    On composite rows, +9.5 and +6.3 add the 2 dp % values, like your sheet formulas. On other rows they add the unrounded values, like CCLAS. −9.5 mm is calculated as 100 − (+9.5 mm). The lower block's formula (=100−AF50) looks like a slip, so it isn't used here.
+    Copy results gives the full A to AQ Sizing layout, with the recalculated masses and %, ready to paste into Excel.
+  </div>
+</section>
+
+<section class="panel hidden" id="chartPanel">
+  <div class="row end" style="margin-bottom:8px"><h2>Cumulative % passing</h2><select id="chartSel" aria-label="Sample to chart"></select></div>
+  <div class="chartrow">
+    <div class="chart" id="chart"></div>
+    <div class="legend" id="legend"></div>
+  </div>
+</section>
+<div class="vfoot">Sizing preview v2</div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+const EXAMPLE="\t\tIDENT\tEXT ID\tREPORT\tNS\tP_CHECK\t+9.5MM\t-9.5MM\t+6.3MM\t-6.3MM\t-0.15MM\tWGT\t11.2MM\t9.5MM\t8.0MM\t6.3MM\t4.0MM\t-4.0MM\t3.15MM\t2.0MM\t1.0MM\t0.50MM\t0.25MM\t0.15MM\tPAN\tWT TOTAL\tWT < 40\tCAL < 40\tSPLIT < 40\t11.2MM\t9.5MM\t8.0MM\t6.3MM\t4.0MM\t3.15MM\t2.0MM\t1.0MM\t0.50MM\t0.25MM\t0.15MM\tPAN\tTONNAGE\n\t\t\t\t\t\t\t%\t%\t%\t%\t%\tG\tG\tG\tG\tG\tG\tG\tG\tG\tG\tG\tG\tG\tG\tG\tG\tG\tG\t%\t%\t%\t%\t%\t%\t%\t%\t%\t%\t%\t%\t\n1319976\tUNK\t34816 YNDF CARGO\t26068088\tYes\t\t-0.05971117962\t12.07\t87.93\t24.54\t75.46\t3.028807677\t6163\t453.34\t291\t347.34\t422\t728.67\t3924.33\t343.3200873\t693.0228377\t1030.968051\t911.041171\t591.9080175\t167.2929584\t186.7768772\t6166.68\t3924.33\t3924.33\t\t7.35\t4.72\t5.63\t6.84\t11.82\t5.57\t11.24\t16.72\t14.77\t9.6\t2.71\t3.03\t\n1319980\tUNK\tA 34816 YNDF CARGO\t26068088\t\t\t26.01\t16.77\t83.23\t33.62\t66.38\t2.43\t1545\t113.67\t78\t89.67\t103\t174.67\t986\t51.1\t103.15\t153.45\t135.6\t88.1\t24.9\t27.8\t1143.1\t\t584.1\t586.75\t9.94\t6.82\t7.84\t9.01\t15.28\t4.47\t9.02\t13.42\t11.86\t7.71\t2.18\t2.43\t\n1319981\tUNK\tB 34816 YNDF CARGO\t26068088\t\t\t\t\t\t\t\t\t1590\t121.67\t65.33\t78\t122\t191\t1014\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319982\tUNK\tC 34816 YNDF CARGO\t26068088\t\t\t\t\t\t\t\t\t1521.67\t108\t68.67\t91.67\t101\t180\t975\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319983\tUNK\tD 34816 YNDF CARGO\t26068088\t\t\t\t\t\t\t\t\t1506.33\t110\t79\t88\t96\t183\t949.33\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319984\tUNK\t34816 YNDF A\t26068088\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t45981\n1319985\tUNK\t34816 YNDF B\t26068088\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t45981\n1319986\tUNK\t34816 YNDF A1 AVG\t26068088\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319987\tDUP\t34816 YNDF A1 DUP A\t26068088\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319988\tDUP\t34816 YNDF A1 DUP B\t26068088\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319989\tUNK\t34816 YNDF A2 AVG\t26068088\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319990\tDUP\t34816 YNDF A2 DUP A\t26068088\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319991\tDUP\t34816 YNDF A2 DUP B\t26068088\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319992\tUNK\t34816 YNDF B1 AVG\t26068088\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319993\tDUP\t34816 YNDF B1 DUP A\t26068088\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319994\tDUP\t34816 YNDF B1 DUP B\t26068088\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319995\tUNK\t34816 YNDF B2 AVG\t26068088\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319996\tDUP\t34816 YNDF B2 DUP A\t26068088\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319997\tDUP\t34816 YNDF B2 DUP B\t26068088\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n1319998\tUNK\t34816 YNDF P897 01\t26068087\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t21374\n1319999\tUNK\t34816 YNDF P897 02\t26068089\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4376\n1320000\tUNK\t34816 YNDF P809 01\t26068090\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t20231";
+const HDR=['','','IDENT','EXT ID','REPORT','NS','P_CHECK','+9.5MM','-9.5MM','+6.3MM','-6.3MM','-0.15MM','WGT',
+ '11.2MM','9.5MM','8.0MM','6.3MM','4.0MM','-4.0MM','3.15MM','2.0MM','1.0MM','0.50MM','0.25MM','0.15MM','PAN',
+ 'WT TOTAL','WT < 40','CAL < 40','SPLIT < 40','11.2MM','9.5MM','8.0MM','6.3MM','4.0MM','3.15MM','2.0MM','1.0MM','0.50MM','0.25MM','0.15MM','PAN','TONNAGE'];
+const SL=['11.2','9.5','8.0','6.3','4.0','−4.0','3.15','2.0','1.0','0.50','0.25','0.15','PAN'];
+const PL=['11.2','9.5','8.0','6.3','4.0','3.15','2.0','1.0','0.50','0.25','0.15','PAN'];
+const SIZES=[11.2,9.5,8.0,6.3,4.0,3.15,2.0,1.0,0.5,0.25,0.15];
+const IDX=['P_CHECK','+9.5','−9.5','+6.3','−6.3','−0.15'];
+const $=id=>document.getElementById(id);
+const ok=Number.isFinite;
+const num=s=>{ if(s==null) return NaN; s=String(s).trim().replace(/,/g,''); if(s==='') return NaN; const v=Number(s); return ok(v)?v:NaN; };
+const z=v=>ok(v)?v:0;
+const sum=a=>a.reduce((s,v)=>s+z(v),0);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>String(s||'').trim().replace(/\s+/g,' ').toUpperCase();
+const f2=v=>ok(v)?v.toFixed(2):'';
+const r2d=v=>ok(v)?Math.round(v*100)/100:v;
+
+let rows=[], pctMode='WT', scaleMode='CAL';
+
+function parse(text){
+  const lines=text.replace(/\r/g,'').split('\n').map(l=>l.split('\t'));
+  const hi=lines.findIndex(c=>{const u=c.map(x=>x.trim().toUpperCase()); return u.includes('WGT')&&u.includes('IDENT');});
+  let off=0, data=lines;
+  if(hi>=0){ off=lines[hi].map(x=>x.trim().toUpperCase()).indexOf('WGT')-12; data=lines.slice(hi+1); }
+  const out=[];
+  data.forEach(c=>{
+    const cell=i=>((c[i+off]??'')+'').trim();
+    const cells=HDR.map((_,i)=>i+off>=0?cell(i):'');
+    const ident=cells[2]; if(!ident||norm(ident)==='IDENT') return;
+    const m={W:r2d(num(cells[12])),s:[...Array(13)].map((_,i)=>r2d(num(cells[13+i]))),split:r2d(num(cells[29]))};
+    out.push({cells,ident,type:cells[1],labid:cells[0],m,orig:{W:m.W,s:m.s.slice(),split:m.split},
+      pasted:{g:num(cells[6]),idx:[7,8,9,10,11].map(i=>num(cells[i])),pct:[...Array(12)].map((_,i)=>num(cells[30+i]))},subs:[],role:'empty'});
+  });
+  if(!out.length) throw new Error('No data rows found. Check that the paste includes the rows below the header.');
+  if(hi<0 && !out.some(r=>ok(r.m.W))) throw new Error('No WGT values found. Paste the header row too, or paste all columns from column A.');
+  return out;
+}
+const hasC=m=>m.s.slice(0,5).some(ok);
+const hasF=m=>m.s.slice(6).some(ok);
+
+function group(){
+  const by=new Map(rows.map(r=>[norm(r.ident),r]));
+  rows.forEach(r=>{r.subs=[]; r.parent=null;});
+  rows.forEach(r=>{ const mm=norm(r.ident).match(/^([A-Z]) (.+)$/); if(mm&&by.has(mm[2])&&by.get(mm[2])!==r){ const p=by.get(mm[2]); p.subs.push(r); r.parent=p; } });
+  rows.forEach(r=>{
+    const cs=r.subs.filter(s=>hasC(s.m)), fs=r.subs.filter(s=>hasF(s.m));
+    if(cs.length&&fs.length) r.role='comp';
+    else if(r.parent&&r.parent.subs.some(s=>hasC(s.m))&&r.parent.subs.some(s=>hasF(s.m))) r.role='sub';
+    else r.role=(hasC(r.m)||hasF(r.m)||ok(r.m.W))?'single':'empty';
+  });
+}
+
+function calc(r){
+  let W,c,minus4,f,fraw,cal,split,scale=1,basisMass;
+  if(r.role==='comp'){
+    const subs=r.subs.filter(s=>hasC(s.m)||hasF(s.m)), fs=subs.filter(s=>hasF(s.m));
+    W=sum(subs.map(s=>s.m.W)); c=[0,1,2,3,4].map(i=>sum(subs.map(s=>s.m.s[i]))); minus4=sum(subs.map(s=>s.m.s[5]));
+    fraw=[6,7,8,9,10,11,12].map(i=>sum(fs.map(s=>s.m.s[i]))); cal=sum(fraw); split=sum(fs.map(s=>s.m.split));
+    basisMass=scaleMode==='SPLIT'&&split>0?split:cal; scale=basisMass>0?minus4/basisMass:NaN;
+    f=fraw.map(v=>v*scale);
+  } else {
+    if(!hasF(r.m)&&r.role!=='single') return null;
+    W=r.m.W; c=r.m.s.slice(0,5).map(z); minus4=r.m.s[5]; f=r.m.s.slice(6).map(z); cal=sum(f); split=r.m.split;
+    if(!hasF(r.m)) return {partial:true,W,c,minus4};
+  }
+  const WT=sum(c)+sum(f), base=pctMode==='WT'?WT:W;
+  const pct=[...c,...f].map(v=>base>0?v/base*100:NaN);
+  const r2=r.role==='comp'?(v=>Math.round(v*100)/100):(v=>v); // composite: sheet formula adds the 2 dp %; others: CCLAS adds unrounded
+  const p95=r2(pct[0])+r2(pct[1]), p63=r2(pct[0])+r2(pct[1])+r2(pct[2])+r2(pct[3]);
+  return {W,c,minus4,f,WT,cal,split,scale,basisMass,calOut:sum(f),pct,
+    idx:[ok(W)&&W?(W-WT)/W*100:NaN,p95,100-p95,p63,100-p63,pct[11]]};
+}
+
+// ---------- mass editor ----------
+function buildMass(){
+  $('mass').querySelector('thead').innerHTML=`<tr><th class="l" rowspan="2">Ident</th><th rowspan="2">WGT</th><th class="grp sepL" colspan="5">Coarse fractions</th><th class="grp sepL">Split</th><th class="grp sepL" colspan="7">Fine fractions</th><th class="grp sepL" colspan="2">Fines split</th></tr>
+   <tr>${SL.map((l,i)=>`<th class="${i===0||i===5||i===6?'sepL':''}">${l}</th>`).join('')}<th class="sepL">SPLIT&lt;40</th><th>CAL&lt;40</th></tr>`;
+  const show=rows.filter(r=>r.role!=='empty');
+  $('mass').querySelector('tbody').innerHTML=show.map(r=>{
+    const ri=rows.indexOf(r);
+    if(r.role==='comp') return `<tr class="comp" data-ri="${ri}"><td class="l">${esc(r.ident)}<span class="role c">Composite</span></td>`+
+      `<td data-cc="W"></td>`+SL.map((_,i)=>`<td data-cc="s${i}" class="${i>=6?'calc':''} ${i===0||i===5||i===6?'sepL':''}"></td>`).join('')+`<td class="sepL" data-cc="split"></td><td data-cc="cal"></td></tr>`;
+    const inp=(k,v,cls='')=>`<td class="${cls}"><input data-k="${k}" inputmode="decimal" value="${ok(v)?v.toFixed(2):''}" aria-label="${esc(r.ident)} ${k}"></td>`;
+    return `<tr data-ri="${ri}"><td class="l">${esc(r.ident)}${r.role==='sub'?'<span class="role">Sub-sample</span>':''}</td>`+inp('W',r.m.W)+
+      r.m.s.map((v,i)=>inp('s'+i,v,i===0||i===5||i===6?'sepL':'')).join('')+inp('split',r.m.split,'sepL')+`<td data-cc="cal"></td></tr>`;
+  }).join('');
+  markMods();
+}
+function markMods(){
+  $('mass').querySelectorAll('input[data-k]').forEach(inp=>{
+    const r=rows[+inp.closest('tr').dataset.ri], k=inp.dataset.k;
+    const cur=k==='W'?r.m.W:k==='split'?r.m.split:r.m.s[+k.slice(1)], o=k==='W'?r.orig.W:k==='split'?r.orig.split:r.orig.s[+k.slice(1)];
+    inp.classList.toggle('mod',!(ok(cur)?ok(o)&&Math.abs(cur-o)<1e-9:!ok(o)));
+  });
+}
+function fillComputedMass(){
+  $('mass').querySelectorAll('tbody tr').forEach(tr=>{
+    const r=rows[+tr.dataset.ri]; const k=calc(r);
+    const set=(cc,v,d=2)=>{const td=tr.querySelector(`[data-cc="${cc}"]`); if(td) td.textContent=ok(v)?v.toFixed(d):'';};
+    if(r.role==='comp'&&k){ set('W',k.W); k.c.forEach((v,i)=>set('s'+i,v)); set('s5',k.minus4); k.f.forEach((v,i)=>set('s'+(6+i),v)); set('split',k.split); set('cal',k.calOut); }
+    else set('cal',hasF(r.m)?sum(r.m.s.slice(6)):NaN);
+  });
+}
+
+// ---------- results ----------
+function renderRes(){
+  const showEmpty=$('showEmpty').checked;
+  $('res').querySelector('thead').innerHTML=`<tr><th class="l">Ident</th>${IDX.map((l,i)=>`<th class="${i===1?'sepL':''}">${l}</th>`).join('')}${PL.map((l,i)=>`<th class="${i===0?'sepL':''}">${l}</th>`).join('')}</tr>`;
+  const cell=(nv,ov,cls='')=>{
+    if(!ok(nv)) return `<td class="${cls}"></td>`;
+    let sub=''; if(ok(ov)&&nv.toFixed(2)!==ov.toFixed(2)){ const d=+nv.toFixed(2)-+ov.toFixed(2); sub=`<span class="was">was ${ov.toFixed(2)} <span class="d ${d>0?'up':'down'}">${d>0?'+':'−'}${Math.abs(d).toFixed(2)}</span></span>`; }
+    return `<td class="${cls}">${nv.toFixed(2)}${sub}</td>`;
+  };
+  $('res').querySelector('tbody').innerHTML=rows.map(r=>{
+    const k=r.role==='empty'?null:calc(r);
+    if(!k&&!showEmpty) return '';
+    const tag=r.role==='comp'?'<span class="role c">Composite</span>':r.role==='sub'?'<span class="role">Sub-sample</span>':'';
+    if(!k||k.partial) return `<tr class="${r.role==='comp'?'comp':''}"><td class="l">${esc(r.ident)}${tag}</td><td colspan="${IDX.length+PL.length}" class="l muted">${k&&k.partial?'Coarse fractions only. Feeds the composite.':''}</td></tr>`;
+    return `<tr class="${r.role==='comp'?'comp':''}"><td class="l">${esc(r.ident)}${tag}</td>`+
+      k.idx.map((v,i)=>cell(v,i===0?r.pasted.g:r.pasted.idx[i-1],i===1?'sepL':'')).join('')+
+      k.pct.map((v,i)=>cell(v,r.pasted.pct[i],i===0?'sepL':'')).join('')+`</tr>`;
+  }).join('')||`<tr><td class="l muted" colspan="19">No rows with sizing data.</td></tr>`;
+}
+
+// ---------- controls hints ----------
+function hints(){
+  const comp=rows.find(r=>r.role==='comp'); const k=comp?calc(comp):null;
+  $('hintPct').innerHTML=pctMode==='WT'
+    ?'Each fraction ÷ WT TOTAL (the sum of all sieved and scaled fractions). This matches the CCLAS results and the upper block.'
+    :'Each fraction ÷ WGT (the weighed sample mass). This matches the lower block. The % won\'t add to 100 when there is sieve loss.';
+  if(k) $('hintScale').innerHTML=`Composite −4.0 mm (WT&lt;40) <b>${k.minus4.toFixed(2)} g</b> ÷ ${scaleMode==='CAL'?'CAL&lt;40':'SPLIT&lt;40'} <b>${ok(k.basisMass)?k.basisMass.toFixed(2):'n/a'} g</b> = scale factor <b>${ok(k.scale)?k.scale.toFixed(4):'n/a'}</b>.`+
+    (scaleMode==='SPLIT'?' SPLIT&lt;40 keeps the fines sieve loss in the result.':' CAL&lt;40 forces the scaled fines to add up exactly to WT&lt;40.');
+  else $('hintScale').textContent='No composite found in this paste, so fine scaling does not apply.';
+}
+
+// ---------- chart ----------
+function buildChartSel(){
+  const opts=rows.map((r,i)=>({r,i})).filter(({r})=>{const k=r.role==='empty'?null:calc(r); return k&&!k.partial;});
+  const cur=$('chartSel').value;
+  $('chartSel').innerHTML=opts.map(({r,i})=>`<option value="${i}">${esc(r.ident)}${r.role==='comp'?' (composite)':''}</option>`).join('');
+  if(opts.some(o=>String(o.i)===cur)) $('chartSel').value=cur;
+  else { const c=opts.find(o=>o.r.role==='comp'); if(c) $('chartSel').value=c.i; }
+}
+function passing(pct){ if(!pct||!pct.every(ok)) return null; let cum=0; const tot=sum(pct); return SIZES.map((_,i)=>{cum+=pct[i]; return tot-cum;}); }
+function drawChart(){
+  const i=$('chartSel').value; if(i===''){ $('chart').innerHTML=''; $('legend').innerHTML=''; return; }
+  const r=rows[+i], k=calc(r); const now=passing(k.pct), was=r.pasted.pct.every(ok)?passing(r.pasted.pct):null;
+  const W=640,H=300,L=46,R=16,T=14,B=38, xmin=Math.log10(0.1), xmax=Math.log10(16);
+  const x=s=>L+(Math.log10(s)-xmin)/(xmax-xmin)*(W-L-R), y=v=>T+(1-v/100)*(H-T-B);
+  const path=a=>a.map((v,j)=>`${j?'L':'M'}${x(SIZES[j]).toFixed(1)},${y(Math.max(0,Math.min(100,v))).toFixed(1)}`).join('');
+  const css=getComputedStyle(document.documentElement); const line=css.getPropertyValue('--line'), mut=css.getPropertyValue('--muted'), br=css.getPropertyValue('--brand');
+  let g=''; [0,20,40,60,80,100].forEach(v=>g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="${line}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="${mut}">${v}</text>`);
+  [0.15,0.25,0.5,1,2,4,6.3,11.2].forEach(s=>g+=`<line x1="${x(s)}" x2="${x(s)}" y1="${T}" y2="${H-B}" stroke="${line}"/><text x="${x(s)}" y="${H-B+16}" text-anchor="middle" font-size="11" fill="${mut}">${s}</text>`);
+  g+=`<text x="${(L+W-R)/2}" y="${H-4}" text-anchor="middle" font-size="11.5" fill="${mut}">Sieve size (mm, log scale)</text><text transform="translate(12 ${(T+H-B)/2}) rotate(-90)" text-anchor="middle" font-size="11.5" fill="${mut}">% passing</text>`;
+  if(was) g+=`<path d="${path(was)}" fill="none" stroke="${mut}" stroke-width="2" stroke-dasharray="5 4"/>`;
+  if(now){ g+=`<path d="${path(now)}" fill="none" stroke="${br}" stroke-width="2.5"/>`+now.map((v,j)=>`<circle cx="${x(SIZES[j])}" cy="${y(v)}" r="3.2" fill="${br}"><title>${SIZES[j]} mm: ${v.toFixed(2)}% passing</title></circle>`).join(''); }
+  $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative percent passing for ${esc(r.ident)}">${g}</svg>`;
+  const at=(a,s)=>a?a[SIZES.indexOf(s)]:NaN;
+  $('legend').innerHTML=`<div><i></i>Current calculation</div>${was?'<div><i class="p"></i>Pasted CCLAS values</div>':''}
+    <div class="muted" style="margin-top:8px">Passing 6.3 mm: <b>${f2(at(now,6.3))}%</b>${was?` (was ${f2(at(was,6.3))}%)`:''}<br>Passing 0.15 mm: <b>${f2(at(now,0.15))}%</b>${was?` (was ${f2(at(was,0.15))}%)`:''}</div>`+
+    (pctMode==='WGT'?'<div class="muted" style="margin-top:8px">Against WGT, the curve can finish above 0 at the pan, because of sieve loss.</div>':'');
+}
+
+function refresh(){ fillComputedMass(); renderRes(); hints(); buildChartSel(); drawChart(); }
+
+function load(text){
+  $('err').textContent='';
+  try{ rows=parse(text); }catch(e){ $('err').textContent=e.message; return; }
+  group();
+  const comps=rows.filter(r=>r.role==='comp');
+  $('loadedInfo').innerHTML=`<b>${rows.length}</b> rows loaded, <b>${rows.filter(r=>r.role!=='empty').length}</b> with sizing data`;
+  $('groupInfo').textContent=comps.length?comps.map(c=>`${c.ident} is built from ${c.subs.filter(s=>hasC(s.m)||hasF(s.m)).map(s=>norm(s.ident)[0]).join(', ')} (fines from ${c.subs.filter(s=>hasF(s.m)).map(s=>norm(s.ident)[0]).join(', ')})`).join('. ')+'.':'No composite and sub-sample group found. Each row is calculated on its own.';
+  $('pastePanel').classList.add('hidden');
+  ['loadedPanel','ctlPanel','massPanel','resPanel','chartPanel'].forEach(id=>$(id).classList.remove('hidden'));
+  buildMass(); refresh();
+}
+
+// ---------- events ----------
+$('mass').addEventListener('input',e=>{
+  const inp=e.target; if(!inp.dataset.k) return;
+  const r=rows[+inp.closest('tr').dataset.ri], k=inp.dataset.k, v=num(inp.value);
+  if(k==='W') r.m.W=v; else if(k==='split') r.m.split=v; else r.m.s[+k.slice(1)]=v;
+  markMods(); refresh();
+});
+function seg(id,set){ $(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{ $(id).querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b)); set(b.dataset.v); refresh(); }); }
+$('mass').addEventListener('focusout',e=>{
+  const inp=e.target; if(!inp.dataset.k) return;
+  const r=rows[+inp.closest('tr').dataset.ri], k=inp.dataset.k, v=r2d(num(inp.value));
+  if(k==='W') r.m.W=v; else if(k==='split') r.m.split=v; else r.m.s[+k.slice(1)]=v;
+  inp.value=ok(v)?v.toFixed(2):''; markMods(); refresh();
+});
+seg('segPct',v=>pctMode=v); seg('segScale',v=>scaleMode=v);
+$('loadBtn').onclick=()=>load($('paste').value);
+$('exampleBtn').onclick=()=>{ $('paste').value=EXAMPLE; load(EXAMPLE); };
+$('paste').addEventListener('paste',()=>setTimeout(()=>load($('paste').value),0));
+$('repasteBtn').onclick=()=>{ $('pastePanel').classList.remove('hidden'); ['loadedPanel','ctlPanel','massPanel','resPanel','chartPanel'].forEach(id=>$(id).classList.add('hidden')); $('paste').value=''; $('paste').focus(); };
+$('resetEdits').onclick=()=>{ rows.forEach(r=>{ r.m={W:r.orig.W,s:r.orig.s.slice(),split:r.orig.split}; }); buildMass(); refresh(); };
+$('showEmpty').onchange=renderRes;
+$('chartSel').onchange=drawChart;
+window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').addEventListener('change',drawChart);
+
+function toTSV(){
+  const L=[HDR.join('\t')];
+  rows.forEach(r=>{
+    const c=r.cells.slice(); const k=r.role==='empty'?null:calc(r);
+    const put=(i,v)=>c[i]=ok(v)?v.toFixed(2):'';
+    if(r.role!=='comp'){ put(12,r.m.W); r.m.s.forEach((v,i)=>put(13+i,v)); put(29,r.m.split); }
+    if(k&&!k.partial){
+      if(r.role==='comp'){ put(12,k.W); k.c.forEach((v,i)=>put(13+i,v)); put(18,k.minus4); k.f.forEach((v,i)=>put(19+i,v)); }
+      put(6,k.idx[0]); [1,2,3,4,5].forEach(j=>put(6+j,k.idx[j])); put(26,k.WT); put(27,r.role==='comp'?k.minus4:NaN); put(28,k.calOut);
+      k.pct.forEach((v,i)=>put(30+i,v));
+    }
+    L.push(c.join('\t'));
+  });
+  return L.join('\n');
+}
+async function copy(t){ try{await navigator.clipboard.writeText(t);return true;}catch(e){ const a=document.createElement('textarea'); a.value=t; a.style.position='fixed'; a.style.opacity='0'; document.body.appendChild(a); a.select(); let r=false; try{r=document.execCommand('copy');}catch(_){} a.remove(); return r; } }
+let tt; const toast=m=>{const t=$('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),2400);};
+$('copyBtn').onclick=async()=>toast(await copy(toTSV())?'Copied the A to AQ layout, ready to paste into Excel':'Copy blocked by the browser. Select the table and copy manually.');
+})();
+</script>
+</body>
+</html>
