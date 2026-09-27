@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sizing Preview v2</title>
+<title>Sizing Preview v6</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23e8741e'/%3E%3Cpath d='M12 16h40l-3 8H15z' fill='%23fff'/%3E%3Cpath d='M14 29h36l-3 8H17z' fill='%23fff3e0'/%3E%3Cpath d='M16 42h32l-3 8H19z' fill='%23fff'/%3E%3Ccircle cx='24' cy='13' r='2.5' fill='%23fff3e0'/%3E%3Ccircle cx='34' cy='11' r='3.5' fill='%23fff3e0'/%3E%3Ccircle cx='43' cy='13' r='2' fill='%23fff3e0'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23e8741e'/%3E%3Cpath d='M12 16h40l-3 8H15z' fill='%23fff'/%3E%3Cpath d='M14 29h36l-3 8H17z' fill='%23fff3e0'/%3E%3Cpath d='M16 42h32l-3 8H19z' fill='%23fff'/%3E%3Ccircle cx='24' cy='13' r='2.5' fill='%23fff3e0'/%3E%3Ccircle cx='34' cy='11' r='3.5' fill='%23fff3e0'/%3E%3Ccircle cx='43' cy='13' r='2' fill='%23fff3e0'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,7 +51,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .warn{background:var(--warnbg);color:var(--warnink);border-radius:8px;padding:8px 12px;font-size:13.5px;margin-top:10px}
 
 /* controls */
-.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.controls{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
 .ctl{border:1px solid var(--line);border-radius:9px;padding:12px}
 .ctl .k{font-size:13px;font-weight:600;margin-bottom:8px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
@@ -74,8 +74,21 @@ td input{width:66px;text-align:right;border:1px solid transparent;border-radius:
 td input:hover{border-color:var(--line)}
 td input:focus{border-color:var(--brand);background:var(--panel)}
 td input.mod{background:var(--mod);border-color:var(--brand);color:var(--brand);font-weight:600}
+.cw{position:relative;display:inline-block}
+.rv{display:none;position:absolute;top:-7px;right:-7px;width:18px;height:18px;padding:0;border-radius:50%;border:1px solid var(--brand);
+  background:var(--panel);color:var(--brand);font-size:12px;line-height:1;align-items:center;justify-content:center;z-index:1}
+.rv:hover{background:var(--brand);color:#fff}
+input.mod+.rv{display:flex}
 td.calc{font-style:italic;color:var(--muted);font-weight:500}
-td .was{display:block;font-size:11px;color:var(--muted);font-weight:400}
+#res{table-layout:fixed;width:max-content;min-width:100%}
+#res th,#res td{width:60px;min-width:60px}
+#res .idc{width:200px;min-width:200px;overflow:hidden;text-overflow:ellipsis}
+#res td.chg{background:var(--mod);font-weight:700}
+#res td.chg.up,#res tr.dl td.up{color:var(--up)} #res td.chg.down,#res tr.dl td.down{color:var(--down)}
+#res tr.hasd td{border-bottom:0}
+#res tr.cmp td{font-size:12px;color:var(--muted);font-weight:400;padding-top:2px;padding-bottom:2px;border-bottom:0}
+#res tr.cmp .idc{font-size:11.5px;padding-left:16px}
+#res tr.dl td{font-weight:600;border-bottom:1px solid var(--line);padding-bottom:6px}
 .d.up{color:var(--up)} .d.down{color:var(--down)}
 .role{display:inline-block;font-size:11px;padding:0 6px;border-radius:4px;border:1px solid var(--line);color:var(--muted);font-weight:500;margin-left:6px}
 .role.c{border-color:var(--brand);color:var(--brand)}
@@ -100,7 +113,7 @@ select{font:inherit;font-size:14px;padding:6px 8px;border-radius:7px;border:1px 
 <header>
   <svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#e8741e"/><path d="M12 16h40l-3 8H15z" fill="#fff"/><path d="M14 29h36l-3 8H17z" fill="#fff3e0"/><path d="M16 42h32l-3 8H19z" fill="#fff"/><circle cx="24" cy="13" r="2.5" fill="#fff3e0"/><circle cx="34" cy="11" r="3.5" fill="#fff3e0"/><circle cx="43" cy="13" r="2" fill="#fff3e0"/></svg>
   <div>
-    <h1>Sizing preview <span class="ver">v2</span></h1>
+    <h1>Sizing preview <span class="ver">v6</span></h1>
     <p class="sub">Paste the Sizing tab from CCLAS, edit sieve masses or the calculation settings, and see how the size distribution moves.</p>
   </div>
 </header>
@@ -125,44 +138,41 @@ select{font:inherit;font-size:14px;padding:6px 8px;border-radius:7px;border:1px 
 <section class="panel hidden" id="ctlPanel">
   <div class="controls">
     <div class="ctl">
-      <div class="k">% calculated against</div>
-      <div class="seg" id="segPct"><button data-v="WT" aria-pressed="true">WT TOTAL (CCLAS)</button><button data-v="WGT" aria-pressed="false">WGT</button></div>
-      <div class="hint" id="hintPct"></div>
-    </div>
-    <div class="ctl">
       <div class="k">Composite fines scaled by</div>
       <div class="seg" id="segScale"><button data-v="CAL" aria-pressed="true">CAL &lt; 40</button><button data-v="SPLIT" aria-pressed="false">SPLIT &lt; 40</button></div>
       <div class="hint" id="hintScale"></div>
+      <div class="hint">Each fraction % is its mass ÷ WT TOTAL (the sum of all sieved and scaled fractions), as in CCLAS.</div>
     </div>
   </div>
 </section>
 
 <section class="panel hidden" id="massPanel">
-  <div class="row end" style="margin-bottom:10px"><h2>Sieve masses (g)</h2><span class="muted">Click any mass to edit it. Edited cells turn orange. Composite rows are calculated from their sub-samples.</span></div>
+  <div class="row end" style="margin-bottom:10px"><h2>Sieve masses (g)</h2><span class="muted">Click any mass to edit it. Edited cells turn orange. To undo one cell, click its ↺ or press Esc. Composite rows are calculated from their sub-samples.</span></div>
   <div class="tablewrap"><table id="mass"><thead></thead><tbody></tbody></table></div>
 </section>
 
 <section class="panel hidden" id="resPanel">
   <div class="row end" style="margin-bottom:10px">
     <h2>Results (%)</h2>
-    <div class="row"><label class="chk"><input type="checkbox" id="showEmpty"> Show rows without data</label><button class="primary" id="copyBtn">Copy results</button></div>
+    <button class="primary" id="copyBtn">Copy results</button>
   </div>
   <div class="tablewrap"><table id="res"><thead></thead><tbody></tbody></table></div>
   <div class="notes">
-    Each cell shows the recalculated value. When it differs from the pasted CCLAS value (at 2 dp), the original and the change are shown underneath.
+    When a value changes, its cell is highlighted, and two rows appear underneath: the pasted CCLAS values and the change. Hover over a highlighted cell to see both.
+    Sub-sample rows are hidden here. They still feed the composite, and you can edit them in the sieve masses table.
     On composite rows, +9.5 and +6.3 add the 2 dp % values, like your sheet formulas. On other rows they add the unrounded values, like CCLAS. −9.5 mm is calculated as 100 − (+9.5 mm). The lower block's formula (=100−AF50) looks like a slip, so it isn't used here.
     Copy results gives the full A to AQ Sizing layout, with the recalculated masses and %, ready to paste into Excel.
   </div>
 </section>
 
 <section class="panel hidden" id="chartPanel">
-  <div class="row end" style="margin-bottom:8px"><h2>Cumulative % passing</h2><select id="chartSel" aria-label="Sample to chart"></select></div>
+  <div class="row end" style="margin-bottom:8px"><h2>Cumulative % passing</h2><div class="row"><span class="muted" id="chartName"></span><select id="chartSel" aria-label="Sample to chart"></select></div></div>
   <div class="chartrow">
     <div class="chart" id="chart"></div>
     <div class="legend" id="legend"></div>
   </div>
 </section>
-<div class="vfoot">Sizing preview v2</div>
+<div class="vfoot">Sizing preview v6</div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -186,7 +196,7 @@ const norm=s=>String(s||'').trim().replace(/\s+/g,' ').toUpperCase();
 const f2=v=>ok(v)?v.toFixed(2):'';
 const r2d=v=>ok(v)?Math.round(v*100)/100:v;
 
-let rows=[], pctMode='WT', scaleMode='CAL';
+let rows=[], scaleMode='CAL';
 
 function parse(text){
   const lines=text.replace(/\r/g,'').split('\n').map(l=>l.split('\t'));
@@ -234,7 +244,7 @@ function calc(r){
     W=r.m.W; c=r.m.s.slice(0,5).map(z); minus4=r.m.s[5]; f=r.m.s.slice(6).map(z); cal=sum(f); split=r.m.split;
     if(!hasF(r.m)) return {partial:true,W,c,minus4};
   }
-  const WT=sum(c)+sum(f), base=pctMode==='WT'?WT:W;
+  const WT=sum(c)+sum(f), base=WT;
   const pct=[...c,...f].map(v=>base>0?v/base*100:NaN);
   const r2=r.role==='comp'?(v=>Math.round(v*100)/100):(v=>v); // composite: sheet formula adds the 2 dp %; others: CCLAS adds unrounded
   const p95=r2(pct[0])+r2(pct[1]), p63=r2(pct[0])+r2(pct[1])+r2(pct[2])+r2(pct[3]);
@@ -251,7 +261,7 @@ function buildMass(){
     const ri=rows.indexOf(r);
     if(r.role==='comp') return `<tr class="comp" data-ri="${ri}"><td class="l">${esc(r.ident)}<span class="role c">Composite</span></td>`+
       `<td data-cc="W"></td>`+SL.map((_,i)=>`<td data-cc="s${i}" class="${i>=6?'calc':''} ${i===0||i===5||i===6?'sepL':''}"></td>`).join('')+`<td class="sepL" data-cc="split"></td><td data-cc="cal"></td></tr>`;
-    const inp=(k,v,cls='')=>`<td class="${cls}"><input data-k="${k}" inputmode="decimal" value="${ok(v)?v.toFixed(2):''}" aria-label="${esc(r.ident)} ${k}"></td>`;
+    const inp=(k,v,cls='')=>`<td class="${cls}"><span class="cw"><input data-k="${k}" inputmode="decimal" value="${ok(v)?v.toFixed(2):''}" aria-label="${esc(r.ident)} ${k}"><button type="button" class="rv" data-rv="${k}" aria-label="Revert ${esc(r.ident)} ${k}">↺</button></span></td>`;
     return `<tr data-ri="${ri}"><td class="l">${esc(r.ident)}${r.role==='sub'?'<span class="role">Sub-sample</span>':''}</td>`+inp('W',r.m.W)+
       r.m.s.map((v,i)=>inp('s'+i,v,i===0||i===5||i===6?'sepL':'')).join('')+inp('split',r.m.split,'sepL')+`<td data-cc="cal"></td></tr>`;
   }).join('');
@@ -261,7 +271,10 @@ function markMods(){
   $('mass').querySelectorAll('input[data-k]').forEach(inp=>{
     const r=rows[+inp.closest('tr').dataset.ri], k=inp.dataset.k;
     const cur=k==='W'?r.m.W:k==='split'?r.m.split:r.m.s[+k.slice(1)], o=k==='W'?r.orig.W:k==='split'?r.orig.split:r.orig.s[+k.slice(1)];
-    inp.classList.toggle('mod',!(ok(cur)?ok(o)&&Math.abs(cur-o)<1e-9:!ok(o)));
+    const mod=!(ok(cur)?ok(o)&&Math.abs(cur-o)<1e-9:!ok(o));
+    inp.classList.toggle('mod',mod);
+    const rb=inp.nextElementSibling; if(rb) rb.title=mod?`Revert to ${ok(o)?o.toFixed(2):'blank'}`:'';
+    inp.title=mod?`Pasted value: ${ok(o)?o.toFixed(2):'blank'}. Press Esc or click ↺ to revert.`:'';
   });
 }
 function fillComputedMass(){
@@ -275,30 +288,29 @@ function fillComputedMass(){
 
 // ---------- results ----------
 function renderRes(){
-  const showEmpty=$('showEmpty').checked;
-  $('res').querySelector('thead').innerHTML=`<tr><th class="l">Ident</th>${IDX.map((l,i)=>`<th class="${i===1?'sepL':''}">${l}</th>`).join('')}${PL.map((l,i)=>`<th class="${i===0?'sepL':''}">${l}</th>`).join('')}</tr>`;
-  const cell=(nv,ov,cls='')=>{
-    if(!ok(nv)) return `<td class="${cls}"></td>`;
-    let sub=''; if(ok(ov)&&nv.toFixed(2)!==ov.toFixed(2)){ const d=+nv.toFixed(2)-+ov.toFixed(2); sub=`<span class="was">was ${ov.toFixed(2)} <span class="d ${d>0?'up':'down'}">${d>0?'+':'−'}${Math.abs(d).toFixed(2)}</span></span>`; }
-    return `<td class="${cls}">${nv.toFixed(2)}${sub}</td>`;
-  };
-  $('res').querySelector('tbody').innerHTML=rows.map(r=>{
-    const k=r.role==='empty'?null:calc(r);
-    if(!k&&!showEmpty) return '';
-    const tag=r.role==='comp'?'<span class="role c">Composite</span>':r.role==='sub'?'<span class="role">Sub-sample</span>':'';
-    if(!k||k.partial) return `<tr class="${r.role==='comp'?'comp':''}"><td class="l">${esc(r.ident)}${tag}</td><td colspan="${IDX.length+PL.length}" class="l muted">${k&&k.partial?'Coarse fractions only. Feeds the composite.':''}</td></tr>`;
-    return `<tr class="${r.role==='comp'?'comp':''}"><td class="l">${esc(r.ident)}${tag}</td>`+
-      k.idx.map((v,i)=>cell(v,i===0?r.pasted.g:r.pasted.idx[i-1],i===1?'sepL':'')).join('')+
-      k.pct.map((v,i)=>cell(v,r.pasted.pct[i],i===0?'sepL':'')).join('')+`</tr>`;
-  }).join('')||`<tr><td class="l muted" colspan="19">No rows with sizing data.</td></tr>`;
+  $('res').querySelector('thead').innerHTML=`<tr><th class="l idc">Ident</th><th>P_CHECK</th>${PL.map((l,i)=>`<th class="${i===0?'sepL':''}">${l}</th>`).join('')}${IDX.slice(1).map((l,i)=>`<th class="${i===0?'sepL':''}">${l}</th>`).join('')}</tr>`;
+  const html=[];
+  rows.forEach(r=>{
+    if(r.role==='sub'||r.role==='empty') return;
+    const k=calc(r); if(!k||k.partial) return;
+    const nv=[k.idx[0],...k.pct,...k.idx.slice(1)], ov=[r.pasted.g,...r.pasted.pct,...r.pasted.idx];
+    const cls=i=>i===1||i===13?'sepL':'';
+    const d=nv.map((v,i)=>ok(v)&&ok(ov[i])&&v.toFixed(2)!==ov[i].toFixed(2)?+v.toFixed(2)-+ov[i].toFixed(2):0);
+    const any=d.some(x=>x!==0);
+    const tag=r.role==='comp'?'<span class="role c">Composite</span>':'';
+    html.push(`<tr class="${r.role==='comp'?'comp':''}${any?' hasd':''}"><td class="l idc">${esc(r.ident)}${tag}</td>`+
+      nv.map((v,i)=>`<td class="${cls(i)}${d[i]?' chg '+(d[i]>0?'up':'down'):''}"${d[i]?` title="CCLAS ${ov[i].toFixed(2)} → ${v.toFixed(2)} (${d[i]>0?'+':'−'}${Math.abs(d[i]).toFixed(2)})"`:''}>${ok(v)?v.toFixed(2):''}</td>`).join('')+`</tr>`);
+    if(any){
+      html.push(`<tr class="cmp"><td class="l idc">CCLAS pasted</td>`+ov.map((v,i)=>`<td class="${cls(i)}">${ok(v)?v.toFixed(2):''}</td>`).join('')+`</tr>`);
+      html.push(`<tr class="cmp dl"><td class="l idc">Change</td>`+d.map((x,i)=>`<td class="${cls(i)} ${x>0?'up':x<0?'down':''}">${x?(x>0?'+':'−')+Math.abs(x).toFixed(2):''}</td>`).join('')+`</tr>`);
+    }
+  });
+  $('res').querySelector('tbody').innerHTML=html.join('')||`<tr><td class="l muted" colspan="19">No rows with sizing data.</td></tr>`;
 }
 
 // ---------- controls hints ----------
 function hints(){
   const comp=rows.find(r=>r.role==='comp'); const k=comp?calc(comp):null;
-  $('hintPct').innerHTML=pctMode==='WT'
-    ?'Each fraction ÷ WT TOTAL (the sum of all sieved and scaled fractions). This matches the CCLAS results and the upper block.'
-    :'Each fraction ÷ WGT (the weighed sample mass). This matches the lower block. The % won\'t add to 100 when there is sieve loss.';
   if(k) $('hintScale').innerHTML=`Composite −4.0 mm (WT&lt;40) <b>${k.minus4.toFixed(2)} g</b> ÷ ${scaleMode==='CAL'?'CAL&lt;40':'SPLIT&lt;40'} <b>${ok(k.basisMass)?k.basisMass.toFixed(2):'n/a'} g</b> = scale factor <b>${ok(k.scale)?k.scale.toFixed(4):'n/a'}</b>.`+
     (scaleMode==='SPLIT'?' SPLIT&lt;40 keeps the fines sieve loss in the result.':' CAL&lt;40 forces the scaled fines to add up exactly to WT&lt;40.');
   else $('hintScale').textContent='No composite found in this paste, so fine scaling does not apply.';
@@ -306,11 +318,13 @@ function hints(){
 
 // ---------- chart ----------
 function buildChartSel(){
-  const opts=rows.map((r,i)=>({r,i})).filter(({r})=>{const k=r.role==='empty'?null:calc(r); return k&&!k.partial;});
+  const opts=rows.map((r,i)=>({r,i})).filter(({r})=>{ if(r.role==='sub'||r.role==='empty') return false; const k=calc(r); return k&&!k.partial;});
   const cur=$('chartSel').value;
   $('chartSel').innerHTML=opts.map(({r,i})=>`<option value="${i}">${esc(r.ident)}${r.role==='comp'?' (composite)':''}</option>`).join('');
   if(opts.some(o=>String(o.i)===cur)) $('chartSel').value=cur;
   else { const c=opts.find(o=>o.r.role==='comp'); if(c) $('chartSel').value=c.i; }
+  $('chartSel').classList.toggle('hidden',opts.length<=1);
+  $('chartName').textContent=opts.length===1?opts[0].r.ident:'';
 }
 function passing(pct){ if(!pct||!pct.every(ok)) return null; let cum=0; const tot=sum(pct); return SIZES.map((_,i)=>{cum+=pct[i]; return tot-cum;}); }
 function drawChart(){
@@ -328,8 +342,7 @@ function drawChart(){
   $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative percent passing for ${esc(r.ident)}">${g}</svg>`;
   const at=(a,s)=>a?a[SIZES.indexOf(s)]:NaN;
   $('legend').innerHTML=`<div><i></i>Current calculation</div>${was?'<div><i class="p"></i>Pasted CCLAS values</div>':''}
-    <div class="muted" style="margin-top:8px">Passing 6.3 mm: <b>${f2(at(now,6.3))}%</b>${was?` (was ${f2(at(was,6.3))}%)`:''}<br>Passing 0.15 mm: <b>${f2(at(now,0.15))}%</b>${was?` (was ${f2(at(was,0.15))}%)`:''}</div>`+
-    (pctMode==='WGT'?'<div class="muted" style="margin-top:8px">Against WGT, the curve can finish above 0 at the pan, because of sieve loss.</div>':'');
+    <div class="muted" style="margin-top:8px">Passing 6.3 mm: <b>${f2(at(now,6.3))}%</b>${was?` (was ${f2(at(was,6.3))}%)`:''}<br>Passing 0.15 mm: <b>${f2(at(now,0.15))}%</b>${was?` (was ${f2(at(was,0.15))}%)`:''}</div>`;
 }
 
 function refresh(){ fillComputedMass(); renderRes(); hints(); buildChartSel(); drawChart(); }
@@ -360,13 +373,20 @@ $('mass').addEventListener('focusout',e=>{
   if(k==='W') r.m.W=v; else if(k==='split') r.m.split=v; else r.m.s[+k.slice(1)]=v;
   inp.value=ok(v)?v.toFixed(2):''; markMods(); refresh();
 });
-seg('segPct',v=>pctMode=v); seg('segScale',v=>scaleMode=v);
+function revertCell(inp){
+  const r=rows[+inp.closest('tr').dataset.ri], k=inp.dataset.k;
+  const o=k==='W'?r.orig.W:k==='split'?r.orig.split:r.orig.s[+k.slice(1)];
+  if(k==='W') r.m.W=o; else if(k==='split') r.m.split=o; else r.m.s[+k.slice(1)]=o;
+  inp.value=ok(o)?o.toFixed(2):''; markMods(); refresh();
+}
+$('mass').addEventListener('click',e=>{ const b=e.target.closest('.rv'); if(!b) return; const inp=b.previousElementSibling; revertCell(inp); inp.focus(); });
+$('mass').addEventListener('keydown',e=>{ if(e.key==='Escape'&&e.target.dataset.k&&e.target.classList.contains('mod')){ e.preventDefault(); revertCell(e.target); } });
+seg('segScale',v=>scaleMode=v);
 $('loadBtn').onclick=()=>load($('paste').value);
 $('exampleBtn').onclick=()=>{ $('paste').value=EXAMPLE; load(EXAMPLE); };
 $('paste').addEventListener('paste',()=>setTimeout(()=>load($('paste').value),0));
 $('repasteBtn').onclick=()=>{ $('pastePanel').classList.remove('hidden'); ['loadedPanel','ctlPanel','massPanel','resPanel','chartPanel'].forEach(id=>$(id).classList.add('hidden')); $('paste').value=''; $('paste').focus(); };
 $('resetEdits').onclick=()=>{ rows.forEach(r=>{ r.m={W:r.orig.W,s:r.orig.s.slice(),split:r.orig.split}; }); buildMass(); refresh(); };
-$('showEmpty').onchange=renderRes;
 $('chartSel').onchange=drawChart;
 window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').addEventListener('change',drawChart);
 
