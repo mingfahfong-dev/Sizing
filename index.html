@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sizing Preview v6</title>
+<title>Sizing Preview v9</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23e8741e'/%3E%3Cpath d='M12 16h40l-3 8H15z' fill='%23fff'/%3E%3Cpath d='M14 29h36l-3 8H17z' fill='%23fff3e0'/%3E%3Cpath d='M16 42h32l-3 8H19z' fill='%23fff'/%3E%3Ccircle cx='24' cy='13' r='2.5' fill='%23fff3e0'/%3E%3Ccircle cx='34' cy='11' r='3.5' fill='%23fff3e0'/%3E%3Ccircle cx='43' cy='13' r='2' fill='%23fff3e0'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23e8741e'/%3E%3Cpath d='M12 16h40l-3 8H15z' fill='%23fff'/%3E%3Cpath d='M14 29h36l-3 8H17z' fill='%23fff3e0'/%3E%3Cpath d='M16 42h32l-3 8H19z' fill='%23fff'/%3E%3Ccircle cx='24' cy='13' r='2.5' fill='%23fff3e0'/%3E%3Ccircle cx='34' cy='11' r='3.5' fill='%23fff3e0'/%3E%3Ccircle cx='43' cy='13' r='2' fill='%23fff3e0'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,6 +58,19 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .seg button{border:0;border-radius:0;padding:6px 14px;background:var(--panel)}
 .seg button+button{border-left:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--brand);color:#fff;font-weight:600}
+.drop{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:14px;padding:14px;border:2px dashed var(--line);border-radius:9px}
+.drop.over{border-color:var(--brand);background:var(--mod)}
+.filebtn{font-size:14px;border-radius:7px;border:1px solid var(--brand);background:var(--brand);color:#fff;font-weight:600;padding:7px 13px;cursor:pointer}
+.filebtn:focus-within{outline:2px solid var(--brand);outline-offset:2px}
+.facrow{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.facrow label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.fstep{display:inline-flex;align-items:stretch}
+.fstep button{padding:0 11px;font-size:18px;line-height:1;border-radius:0}
+.fstep button:first-child{border-radius:7px 0 0 7px}
+.fstep button:last-child{border-radius:0 7px 7px 0}
+.fstep input{width:110px;text-align:center;border:1px solid var(--line);border-left:0;border-right:0;background:var(--panel);color:var(--ink);
+  font:600 16px "IBM Plex Sans",system-ui,sans-serif;font-variant-numeric:tabular-nums;padding:5px 4px}
+.facrow.manual .fstep input{background:var(--mod);color:var(--brand)}
 .ctl .hint{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.45}
 .ctl .hint b{color:var(--ink);font-weight:600}
 
@@ -113,7 +126,7 @@ select{font:inherit;font-size:14px;padding:6px 8px;border-radius:7px;border:1px 
 <header>
   <svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#e8741e"/><path d="M12 16h40l-3 8H15z" fill="#fff"/><path d="M14 29h36l-3 8H17z" fill="#fff3e0"/><path d="M16 42h32l-3 8H19z" fill="#fff"/><circle cx="24" cy="13" r="2.5" fill="#fff3e0"/><circle cx="34" cy="11" r="3.5" fill="#fff3e0"/><circle cx="43" cy="13" r="2" fill="#fff3e0"/></svg>
   <div>
-    <h1>Sizing preview <span class="ver">v6</span></h1>
+    <h1>Sizing preview <span class="ver">v9</span></h1>
     <p class="sub">Paste the Sizing tab from CCLAS, edit sieve masses or the calculation settings, and see how the size distribution moves.</p>
   </div>
 </header>
@@ -125,6 +138,10 @@ select{font:inherit;font-size:14px;padding:6px 8px;border-radius:7px;border:1px 
     <button class="primary" id="loadBtn">Load data</button>
     <button id="exampleBtn">Load example (34816 YNDF cargo)</button>
     <span class="muted">Columns A to AQ, as laid out in the Sizing tab</span>
+  </div>
+  <div class="drop" id="drop">
+    <div><b>Or upload Prepmaster .DAT files</b><br><span class="muted">Select or drop the Sizing_450 A to D files and the Sizing_300 file for one cargo, all together.</span></div>
+    <label class="filebtn">Choose .DAT files<input type="file" id="datIn" accept=".dat,.DAT" multiple hidden></label>
   </div>
   <div class="err" id="err"></div>
 </section>
@@ -141,6 +158,14 @@ select{font:inherit;font-size:14px;padding:6px 8px;border-radius:7px;border:1px 
       <div class="k">Composite fines scaled by</div>
       <div class="seg" id="segScale"><button data-v="CAL" aria-pressed="true">CAL &lt; 40</button><button data-v="SPLIT" aria-pressed="false">SPLIT &lt; 40</button></div>
       <div class="hint" id="hintScale"></div>
+      <div class="facrow" id="facRow">
+        <label for="facIn">Scale factor applied to the fine fractions</label>
+        <div class="row" style="gap:8px">
+          <div class="fstep"><button type="button" data-fs="-1" aria-label="Decrease factor">−</button><input id="facIn" inputmode="decimal" autocomplete="off"><button type="button" data-fs="1" aria-label="Increase factor">+</button></div>
+          <button type="button" id="facReset" class="hidden">↺ Use calculated</button>
+          <span class="muted" id="facNote"></span>
+        </div>
+      </div>
       <div class="hint">Each fraction % is its mass ÷ WT TOTAL (the sum of all sieved and scaled fractions), as in CCLAS.</div>
     </div>
   </div>
@@ -158,7 +183,7 @@ select{font:inherit;font-size:14px;padding:6px 8px;border-radius:7px;border:1px 
   </div>
   <div class="tablewrap"><table id="res"><thead></thead><tbody></tbody></table></div>
   <div class="notes">
-    When a value changes, its cell is highlighted, and two rows appear underneath: the pasted CCLAS values and the change. Hover over a highlighted cell to see both.
+    When a value changes, its cell is highlighted, and two rows appear underneath: the pasted CCLAS values (or, for uploaded .DAT data, the original result as uploaded) and the change. Hover over a highlighted cell to see both.
     Sub-sample rows are hidden here. They still feed the composite, and you can edit them in the sieve masses table.
     On composite rows, +9.5 and +6.3 add the 2 dp % values, like your sheet formulas. On other rows they add the unrounded values, like CCLAS. −9.5 mm is calculated as 100 − (+9.5 mm). The lower block's formula (=100−AF50) looks like a slip, so it isn't used here.
     Copy results gives the full A to AQ Sizing layout, with the recalculated masses and %, ready to paste into Excel.
@@ -172,7 +197,7 @@ select{font:inherit;font-size:14px;padding:6px 8px;border-radius:7px;border:1px 
     <div class="legend" id="legend"></div>
   </div>
 </section>
-<div class="vfoot">Sizing preview v6</div>
+<div class="vfoot">Sizing preview v9</div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -196,7 +221,7 @@ const norm=s=>String(s||'').trim().replace(/\s+/g,' ').toUpperCase();
 const f2=v=>ok(v)?v.toFixed(2):'';
 const r2d=v=>ok(v)?Math.round(v*100)/100:v;
 
-let rows=[], scaleMode='CAL';
+let rows=[], scaleMode='CAL', manualFactor=NaN;
 
 function parse(text){
   const lines=text.replace(/\r/g,'').split('\n').map(l=>l.split('\t'));
@@ -232,12 +257,12 @@ function group(){
 }
 
 function calc(r){
-  let W,c,minus4,f,fraw,cal,split,scale=1,basisMass;
+  let W,c,minus4,f,fraw,cal,split,scale=1,basisMass,autoScale=NaN;
   if(r.role==='comp'){
     const subs=r.subs.filter(s=>hasC(s.m)||hasF(s.m)), fs=subs.filter(s=>hasF(s.m));
     W=sum(subs.map(s=>s.m.W)); c=[0,1,2,3,4].map(i=>sum(subs.map(s=>s.m.s[i]))); minus4=sum(subs.map(s=>s.m.s[5]));
     fraw=[6,7,8,9,10,11,12].map(i=>sum(fs.map(s=>s.m.s[i]))); cal=sum(fraw); split=sum(fs.map(s=>s.m.split));
-    basisMass=scaleMode==='SPLIT'&&split>0?split:cal; scale=basisMass>0?minus4/basisMass:NaN;
+    basisMass=scaleMode==='SPLIT'&&split>0?split:cal; autoScale=basisMass>0?minus4/basisMass:NaN; scale=ok(manualFactor)?manualFactor:autoScale;
     f=fraw.map(v=>v*scale);
   } else {
     if(!hasF(r.m)&&r.role!=='single') return null;
@@ -248,7 +273,7 @@ function calc(r){
   const pct=[...c,...f].map(v=>base>0?v/base*100:NaN);
   const r2=r.role==='comp'?(v=>Math.round(v*100)/100):(v=>v); // composite: sheet formula adds the 2 dp %; others: CCLAS adds unrounded
   const p95=r2(pct[0])+r2(pct[1]), p63=r2(pct[0])+r2(pct[1])+r2(pct[2])+r2(pct[3]);
-  return {W,c,minus4,f,WT,cal,split,scale,basisMass,calOut:sum(f),pct,
+  return {W,c,minus4,f,WT,cal,split,scale,autoScale,basisMass,calOut:sum(f),pct,
     idx:[ok(W)&&W?(W-WT)/W*100:NaN,p95,100-p95,p63,100-p63,pct[11]]};
 }
 
@@ -299,9 +324,9 @@ function renderRes(){
     const any=d.some(x=>x!==0);
     const tag=r.role==='comp'?'<span class="role c">Composite</span>':'';
     html.push(`<tr class="${r.role==='comp'?'comp':''}${any?' hasd':''}"><td class="l idc">${esc(r.ident)}${tag}</td>`+
-      nv.map((v,i)=>`<td class="${cls(i)}${d[i]?' chg '+(d[i]>0?'up':'down'):''}"${d[i]?` title="CCLAS ${ov[i].toFixed(2)} → ${v.toFixed(2)} (${d[i]>0?'+':'−'}${Math.abs(d[i]).toFixed(2)})"`:''}>${ok(v)?v.toFixed(2):''}</td>`).join('')+`</tr>`);
+      nv.map((v,i)=>`<td class="${cls(i)}${d[i]?' chg '+(d[i]>0?'up':'down'):''}"${d[i]?` title="${r.baseLabel==='Original'?'Original':'CCLAS'} ${ov[i].toFixed(2)} → ${v.toFixed(2)} (${d[i]>0?'+':'−'}${Math.abs(d[i]).toFixed(2)})"`:''}>${ok(v)?v.toFixed(2):''}</td>`).join('')+`</tr>`);
     if(any){
-      html.push(`<tr class="cmp"><td class="l idc">CCLAS pasted</td>`+ov.map((v,i)=>`<td class="${cls(i)}">${ok(v)?v.toFixed(2):''}</td>`).join('')+`</tr>`);
+      html.push(`<tr class="cmp"><td class="l idc">${r.baseLabel||'CCLAS pasted'}</td>`+ov.map((v,i)=>`<td class="${cls(i)}">${ok(v)?v.toFixed(2):''}</td>`).join('')+`</tr>`);
       html.push(`<tr class="cmp dl"><td class="l idc">Change</td>`+d.map((x,i)=>`<td class="${cls(i)} ${x>0?'up':x<0?'down':''}">${x?(x>0?'+':'−')+Math.abs(x).toFixed(2):''}</td>`).join('')+`</tr>`);
     }
   });
@@ -311,7 +336,10 @@ function renderRes(){
 // ---------- controls hints ----------
 function hints(){
   const comp=rows.find(r=>r.role==='comp'); const k=comp?calc(comp):null;
-  if(k) $('hintScale').innerHTML=`Composite −4.0 mm (WT&lt;40) <b>${k.minus4.toFixed(2)} g</b> ÷ ${scaleMode==='CAL'?'CAL&lt;40':'SPLIT&lt;40'} <b>${ok(k.basisMass)?k.basisMass.toFixed(2):'n/a'} g</b> = scale factor <b>${ok(k.scale)?k.scale.toFixed(4):'n/a'}</b>.`+
+  $('facRow').classList.toggle('hidden',!k); $('facRow').classList.toggle('manual',ok(manualFactor)); $('facReset').classList.toggle('hidden',!ok(manualFactor));
+  if(k&&document.activeElement!==$('facIn')) $('facIn').value=ok(k.scale)?k.scale.toFixed(4):'';
+  if(k) $('facNote').textContent=ok(manualFactor)?`Manual. Calculated would be ${ok(k.autoScale)?k.autoScale.toFixed(4):'n/a'}.`:'Calculated. Type a value to override it.';
+  if(k) $('hintScale').innerHTML=`Composite −4.0 mm (WT&lt;40) <b>${k.minus4.toFixed(2)} g</b> ÷ ${scaleMode==='CAL'?'CAL&lt;40':'SPLIT&lt;40'} <b>${ok(k.basisMass)?k.basisMass.toFixed(2):'n/a'} g</b> = calculated factor <b>${ok(k.autoScale)?k.autoScale.toFixed(4):'n/a'}</b>.`+
     (scaleMode==='SPLIT'?' SPLIT&lt;40 keeps the fines sieve loss in the result.':' CAL&lt;40 forces the scaled fines to add up exactly to WT&lt;40.');
   else $('hintScale').textContent='No composite found in this paste, so fine scaling does not apply.';
 }
@@ -341,23 +369,79 @@ function drawChart(){
   if(now){ g+=`<path d="${path(now)}" fill="none" stroke="${br}" stroke-width="2.5"/>`+now.map((v,j)=>`<circle cx="${x(SIZES[j])}" cy="${y(v)}" r="3.2" fill="${br}"><title>${SIZES[j]} mm: ${v.toFixed(2)}% passing</title></circle>`).join(''); }
   $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative percent passing for ${esc(r.ident)}">${g}</svg>`;
   const at=(a,s)=>a?a[SIZES.indexOf(s)]:NaN;
-  $('legend').innerHTML=`<div><i></i>Current calculation</div>${was?'<div><i class="p"></i>Pasted CCLAS values</div>':''}
+  $('legend').innerHTML=`<div><i></i>Current calculation</div>${was?`<div><i class="p"></i>${r.baseLabel==='Original'?'Original (as uploaded)':'Pasted CCLAS values'}</div>`:''}
     <div class="muted" style="margin-top:8px">Passing 6.3 mm: <b>${f2(at(now,6.3))}%</b>${was?` (was ${f2(at(was,6.3))}%)`:''}<br>Passing 0.15 mm: <b>${f2(at(now,0.15))}%</b>${was?` (was ${f2(at(was,0.15))}%)`:''}</div>`;
 }
 
 function refresh(){ fillComputedMass(); renderRes(); hints(); buildChartSel(); drawChart(); }
 
-function load(text){
+function load(text,note){
   $('err').textContent='';
   try{ rows=parse(text); }catch(e){ $('err').textContent=e.message; return; }
-  group();
+  manualFactor=NaN; group();
+  // baseline for comparison: pasted CCLAS values, or the as-loaded result when there are none (e.g. .DAT upload)
+  rows.forEach(r=>{
+    r.baseLabel='CCLAS pasted';
+    if(r.role==='empty'||r.role==='sub') return;
+    if(r.pasted.pct.some(ok)||ok(r.pasted.g)) return;
+    const k=calc(r); if(!k||k.partial) return;
+    r.pasted={g:k.idx[0],idx:k.idx.slice(1),pct:k.pct.slice()}; r.baseLabel='Original';
+  });
   const comps=rows.filter(r=>r.role==='comp');
-  $('loadedInfo').innerHTML=`<b>${rows.length}</b> rows loaded, <b>${rows.filter(r=>r.role!=='empty').length}</b> with sizing data`;
+  $('loadedInfo').innerHTML=note||`<b>${rows.length}</b> rows loaded, <b>${rows.filter(r=>r.role!=='empty').length}</b> with sizing data`;
   $('groupInfo').textContent=comps.length?comps.map(c=>`${c.ident} is built from ${c.subs.filter(s=>hasC(s.m)||hasF(s.m)).map(s=>norm(s.ident)[0]).join(', ')} (fines from ${c.subs.filter(s=>hasF(s.m)).map(s=>norm(s.ident)[0]).join(', ')})`).join('. ')+'.':'No composite and sub-sample group found. Each row is calculated on its own.';
   $('pastePanel').classList.add('hidden');
   ['loadedPanel','ctlPanel','massPanel','resPanel','chartPanel'].forEach(id=>$(id).classList.remove('hidden'));
   buildMass(); refresh();
 }
+
+// ---------- Prepmaster .DAT upload ----------
+const DAT_COARSE=['WT112000','WT9500','WT8000','WT6300','WT4000','WT_4000'];
+const DAT_FINES=['WT3150','WT2000','WT1000','WT500','WT250','WT150','WT_150'];
+function parseDat(name,text){
+  const kv={}; text.replace(/\r/g,'').split('\n').forEach(l=>{const i=l.indexOf('='); if(i>0) kv[l.slice(0,i).trim().toUpperCase()]=l.slice(i+1).trim();});
+  if(!/SIZING/i.test(kv.ANALYSIS_TYPE||'')) throw new Error(`${name} is not a sizing file (ANALYSIS_TYPE ${kv.ANALYSIS_TYPE||'missing'}).`);
+  const n=k=>r2d(num(kv[k]));
+  const sid=kv.SID||name, is300=/_300\b|SIZING_300/i.test(sid+' '+kv.ANALYSIS_TYPE);
+  const lm=(sid+' '+name).match(/Sizing_450_([A-Z])/i);
+  return {name,sid,is300,letter:lm?lm[1].toUpperCase():'',ship:kv.SHIPID||'',prod:kv.PRODID||'',crg:kv.CRGID||'',sw:num(kv.SAMPLEWEIGHT),
+    W:n('WT_TOTAL'),coarse:DAT_COARSE.map(n),fines:DAT_FINES.map(n),split:n('WT_TOTAL2')};
+}
+function datToTSV(dats){
+  const same=(a,b)=>a.coarse.every((v,i)=>ok(v)&&ok(b.coarse[i])&&Math.abs(v-b.coarse[i])<0.011);
+  const s450=dats.filter(d=>!d.is300), s300=dats.filter(d=>d.is300);
+  const notes=[]; const extra=[];
+  s300.forEach(f=>{
+    const m=s450.find(d=>d.ship===f.ship&&d.prod===f.prod&&same(d,f))||s450.find(d=>d.ship===f.ship&&d.prod===f.prod&&ok(f.sw)&&Math.abs(d.sw-f.sw)<0.01);
+    if(m){ m.fines=f.fines; m.split=f.split; m.from300=f.name; notes.push(`fines from ${m.letter}`); }
+    else extra.push(f);
+  });
+  const groups=new Map();
+  s450.forEach(d=>{ const k=`${d.ship} ${d.prod} CARGO`.trim(); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(d); });
+  const line=(ident,ext,d)=>{ const c=HDR.map(()=>''); c[1]='UNK'; c[2]=ident; c[3]=ext;
+    if(d){ const f=v=>ok(v)?v.toFixed(2):''; c[12]=f(d.W); d.coarse.forEach((v,i)=>c[13+i]=f(v)); d.fines.forEach((v,i)=>c[19+i]=f(v)); c[29]=f(d.split); }
+    return c.join('\t'); };
+  const L=[HDR.join('\t')];
+  groups.forEach((list,k)=>{ L.push(line(k,list[0].crg,null)); list.sort((a,b)=>a.letter.localeCompare(b.letter)).forEach(d=>L.push(line(`${d.letter||'?'} ${k}`,d.crg,d))); });
+  extra.forEach(f=>{ L.push(line(`${f.ship} ${f.prod} SIZING 300`,f.crg,{...f,W:NaN})); });
+  return {tsv:L.join('\n'),groups,notes,extra};
+}
+async function handleDatFiles(list){
+  $('err').textContent='';
+  const files=[...list].filter(f=>/\.dat$/i.test(f.name));
+  if(!files.length){ $('err').textContent='No .DAT files found in that selection.'; return; }
+  try{
+    const dats=await Promise.all(files.map(async f=>parseDat(f.name, await f.text())));
+    const {tsv,groups,notes,extra}=datToTSV(dats);
+    const letters=[...groups.values()].map(g=>g.map(d=>d.letter).join(', ')).join('; ');
+    load(tsv,`<b>${files.length}</b> .DAT file${files.length>1?'s':''} loaded: sub-samples ${letters||'none'}${notes.length?', '+notes.join(', ')+' (Sizing_300)':''}${extra.length?`. ${extra.length} Sizing_300 file(s) did not match a 450 file and are shown on their own`:''}. Changes are compared against the result as uploaded.`);
+  }catch(e){ $('err').textContent=e.message; }
+}
+$('datIn').addEventListener('change',e=>{ handleDatFiles(e.target.files); e.target.value=''; });
+['dragenter','dragover'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault(); $('drop').classList.add('over');}));
+['dragleave','drop'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault(); $('drop').classList.remove('over');}));
+$('drop').addEventListener('drop',e=>handleDatFiles(e.dataTransfer.files));
+window.__handleDatFiles=handleDatFiles;
 
 // ---------- events ----------
 $('mass').addEventListener('input',e=>{
@@ -381,12 +465,21 @@ function revertCell(inp){
 }
 $('mass').addEventListener('click',e=>{ const b=e.target.closest('.rv'); if(!b) return; const inp=b.previousElementSibling; revertCell(inp); inp.focus(); });
 $('mass').addEventListener('keydown',e=>{ if(e.key==='Escape'&&e.target.dataset.k&&e.target.classList.contains('mod')){ e.preventDefault(); revertCell(e.target); } });
-seg('segScale',v=>scaleMode=v);
+seg('segScale',v=>{scaleMode=v; manualFactor=NaN;});
+$('facIn').addEventListener('input',e=>{ const v=num(e.target.value); if(ok(v)&&v>0){ manualFactor=v; refresh(); } });
+$('facIn').addEventListener('blur',()=>refresh());
+$('facIn').addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ e.preventDefault(); manualFactor=NaN; $('facIn').blur(); refresh(); }
+  if(e.key==='ArrowUp'||e.key==='ArrowDown'){ e.preventDefault(); stepFactor((e.key==='ArrowUp'?1:-1)*(e.shiftKey?0.1:0.01)); }
+});
+function stepFactor(d){ const comp=rows.find(r=>r.role==='comp'); if(!comp) return; const k=calc(comp); manualFactor=Math.round((k.scale+d)*1e4)/1e4; if(manualFactor<=0) manualFactor=0.0001; $('facIn').value=manualFactor.toFixed(4); refresh(); }
+document.querySelectorAll('[data-fs]').forEach(b=>b.onclick=()=>stepFactor(+b.dataset.fs*0.01));
+$('facReset').onclick=()=>{ manualFactor=NaN; refresh(); };
 $('loadBtn').onclick=()=>load($('paste').value);
 $('exampleBtn').onclick=()=>{ $('paste').value=EXAMPLE; load(EXAMPLE); };
 $('paste').addEventListener('paste',()=>setTimeout(()=>load($('paste').value),0));
 $('repasteBtn').onclick=()=>{ $('pastePanel').classList.remove('hidden'); ['loadedPanel','ctlPanel','massPanel','resPanel','chartPanel'].forEach(id=>$(id).classList.add('hidden')); $('paste').value=''; $('paste').focus(); };
-$('resetEdits').onclick=()=>{ rows.forEach(r=>{ r.m={W:r.orig.W,s:r.orig.s.slice(),split:r.orig.split}; }); buildMass(); refresh(); };
+$('resetEdits').onclick=()=>{ manualFactor=NaN; rows.forEach(r=>{ r.m={W:r.orig.W,s:r.orig.s.slice(),split:r.orig.split}; }); buildMass(); refresh(); };
 $('chartSel').onchange=drawChart;
 window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').addEventListener('change',drawChart);
 
