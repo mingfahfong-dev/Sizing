@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sizing Preview v9</title>
+<title>Sizing Preview v10</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23e8741e'/%3E%3Cpath d='M12 16h40l-3 8H15z' fill='%23fff'/%3E%3Cpath d='M14 29h36l-3 8H17z' fill='%23fff3e0'/%3E%3Cpath d='M16 42h32l-3 8H19z' fill='%23fff'/%3E%3Ccircle cx='24' cy='13' r='2.5' fill='%23fff3e0'/%3E%3Ccircle cx='34' cy='11' r='3.5' fill='%23fff3e0'/%3E%3Ccircle cx='43' cy='13' r='2' fill='%23fff3e0'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23e8741e'/%3E%3Cpath d='M12 16h40l-3 8H15z' fill='%23fff'/%3E%3Cpath d='M14 29h36l-3 8H17z' fill='%23fff3e0'/%3E%3Cpath d='M16 42h32l-3 8H19z' fill='%23fff'/%3E%3Ccircle cx='24' cy='13' r='2.5' fill='%23fff3e0'/%3E%3Ccircle cx='34' cy='11' r='3.5' fill='%23fff3e0'/%3E%3Ccircle cx='43' cy='13' r='2' fill='%23fff3e0'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -108,7 +108,7 @@ td.calc{font-style:italic;color:var(--muted);font-weight:500}
 .sepL{border-left:2px solid var(--line)}
 /* chart */
 .chartrow{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:18px;align-items:start}
-.chart svg{width:100%;height:auto;display:block}
+.chart svg{width:100%;height:auto;max-height:380px;display:block}
 .legend{font-size:13px;line-height:1.9}
 .legend i{display:inline-block;width:22px;height:0;border-top:3px solid var(--brand);vertical-align:4px;margin-right:6px}
 .legend i.p{border-top:2px dashed var(--muted)}
@@ -119,6 +119,35 @@ select{font:inherit;font-size:14px;padding:6px 8px;border-radius:7px;border:1px 
 .toast.on{opacity:1}
 @media (max-width:860px){.controls,.chartrow{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.toast{transition:none}}
+
+/* ---- v10: fit to screen (ultra-wide friendly), no sideways scrolling ---- */
+.wrap{max-width:none;padding:14px clamp(12px,1.4vw,28px) 32px}
+header{margin-bottom:12px} h1{font-size:20px}
+.panel{padding:12px 14px;margin-bottom:14px}
+.work{display:flex;flex-direction:column}
+.side{display:contents}
+#ctlPanel{order:1} #massPanel{order:2} #resPanel{order:3} #chartPanel{order:4}
+#mass,#res{table-layout:fixed;width:100%;min-width:0;font-size:clamp(11px,.3vw + 7px,16.5px)}
+#mass col.cid,#res col.cid{width:clamp(170px,12vw,270px)}
+#res th,#res td{width:auto;min-width:0}
+#res .idc{width:auto;min-width:0}
+#mass th,#mass td,#res th,#res td{padding:4px clamp(2px,.2vw,6px);overflow:hidden;text-overflow:ellipsis}
+#mass th,#res th{font-size:.9em}
+#mass td.l,#res td.l{white-space:normal;overflow-wrap:anywhere;line-height:1.25}
+#mass th,#res th{white-space:normal;overflow-wrap:anywhere;line-height:1.2}
+#mass td{overflow:visible}
+.role{display:inline-block;margin-left:0;margin-top:2px}
+#mass td input{width:100%;min-width:0;font-size:inherit;padding:3px 3px}
+#mass .cw{display:block}
+.role{font-size:.8em;margin-left:4px;padding:0 4px}
+.tablewrap{overflow-x:auto}
+@media (min-width:1700px){
+  .work{display:grid;grid-template-columns:minmax(0,1fr) clamp(360px,23vw,520px);grid-template-rows:auto 1fr;column-gap:16px;align-items:start}
+  .side{display:block;grid-column:2;grid-row:1 / span 2;position:sticky;top:12px}
+  #massPanel{grid-column:1;grid-row:1} #resPanel{grid-column:1;grid-row:2}
+  .side .chartrow{grid-template-columns:1fr;gap:6px}
+  .side .panel{margin-bottom:14px}
+}
 </style>
 </head>
 <body>
@@ -126,7 +155,7 @@ select{font:inherit;font-size:14px;padding:6px 8px;border-radius:7px;border:1px 
 <header>
   <svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#e8741e"/><path d="M12 16h40l-3 8H15z" fill="#fff"/><path d="M14 29h36l-3 8H17z" fill="#fff3e0"/><path d="M16 42h32l-3 8H19z" fill="#fff"/><circle cx="24" cy="13" r="2.5" fill="#fff3e0"/><circle cx="34" cy="11" r="3.5" fill="#fff3e0"/><circle cx="43" cy="13" r="2" fill="#fff3e0"/></svg>
   <div>
-    <h1>Sizing preview <span class="ver">v9</span></h1>
+    <h1>Sizing preview <span class="ver">v10</span></h1>
     <p class="sub">Paste the Sizing tab from CCLAS, edit sieve masses or the calculation settings, and see how the size distribution moves.</p>
   </div>
 </header>
@@ -152,25 +181,7 @@ select{font:inherit;font-size:14px;padding:6px 8px;border-radius:7px;border:1px 
   <div id="groupInfo" class="muted" style="margin-top:6px"></div>
 </section>
 
-<section class="panel hidden" id="ctlPanel">
-  <div class="controls">
-    <div class="ctl">
-      <div class="k">Composite fines scaled by</div>
-      <div class="seg" id="segScale"><button data-v="CAL" aria-pressed="true">CAL &lt; 40</button><button data-v="SPLIT" aria-pressed="false">SPLIT &lt; 40</button></div>
-      <div class="hint" id="hintScale"></div>
-      <div class="facrow" id="facRow">
-        <label for="facIn">Scale factor applied to the fine fractions</label>
-        <div class="row" style="gap:8px">
-          <div class="fstep"><button type="button" data-fs="-1" aria-label="Decrease factor">−</button><input id="facIn" inputmode="decimal" autocomplete="off"><button type="button" data-fs="1" aria-label="Increase factor">+</button></div>
-          <button type="button" id="facReset" class="hidden">↺ Use calculated</button>
-          <span class="muted" id="facNote"></span>
-        </div>
-      </div>
-      <div class="hint">Each fraction % is its mass ÷ WT TOTAL (the sum of all sieved and scaled fractions), as in CCLAS.</div>
-    </div>
-  </div>
-</section>
-
+<div class="work">
 <section class="panel hidden" id="massPanel">
   <div class="row end" style="margin-bottom:10px"><h2>Sieve masses (g)</h2><span class="muted">Click any mass to edit it. Edited cells turn orange. To undo one cell, click its ↺ or press Esc. Composite rows are calculated from their sub-samples.</span></div>
   <div class="tablewrap"><table id="mass"><thead></thead><tbody></tbody></table></div>
@@ -189,7 +200,25 @@ select{font:inherit;font-size:14px;padding:6px 8px;border-radius:7px;border:1px 
     Copy results gives the full A to AQ Sizing layout, with the recalculated masses and %, ready to paste into Excel.
   </div>
 </section>
-
+<div class="side">
+<section class="panel hidden" id="ctlPanel">
+  <div class="controls">
+    <div class="ctl">
+      <div class="k">Composite fines scaled by</div>
+      <div class="seg" id="segScale"><button data-v="CAL" aria-pressed="true">CAL &lt; 40</button><button data-v="SPLIT" aria-pressed="false">SPLIT &lt; 40</button></div>
+      <div class="hint" id="hintScale"></div>
+      <div class="facrow" id="facRow">
+        <label for="facIn">Scale factor applied to the fine fractions</label>
+        <div class="row" style="gap:8px">
+          <div class="fstep"><button type="button" data-fs="-1" aria-label="Decrease factor">−</button><input id="facIn" inputmode="decimal" autocomplete="off"><button type="button" data-fs="1" aria-label="Increase factor">+</button></div>
+          <button type="button" id="facReset" class="hidden">↺ Use calculated</button>
+          <span class="muted" id="facNote"></span>
+        </div>
+      </div>
+      <div class="hint">Each fraction % is its mass ÷ WT TOTAL (the sum of all sieved and scaled fractions), as in CCLAS.</div>
+    </div>
+  </div>
+</section>
 <section class="panel hidden" id="chartPanel">
   <div class="row end" style="margin-bottom:8px"><h2>Cumulative % passing</h2><div class="row"><span class="muted" id="chartName"></span><select id="chartSel" aria-label="Sample to chart"></select></div></div>
   <div class="chartrow">
@@ -197,7 +226,9 @@ select{font:inherit;font-size:14px;padding:6px 8px;border-radius:7px;border:1px 
     <div class="legend" id="legend"></div>
   </div>
 </section>
-<div class="vfoot">Sizing preview v9</div>
+</div>
+</div>
+<div class="vfoot">Sizing preview v10</div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -279,6 +310,7 @@ function calc(r){
 
 // ---------- mass editor ----------
 function buildMass(){
+  if(!$('mass').querySelector('colgroup')) $('mass').insertAdjacentHTML('afterbegin','<colgroup><col class="cid"><col span="16"></colgroup>');
   $('mass').querySelector('thead').innerHTML=`<tr><th class="l" rowspan="2">Ident</th><th rowspan="2">WGT</th><th class="grp sepL" colspan="5">Coarse fractions</th><th class="grp sepL">Split</th><th class="grp sepL" colspan="7">Fine fractions</th><th class="grp sepL" colspan="2">Fines split</th></tr>
    <tr>${SL.map((l,i)=>`<th class="${i===0||i===5||i===6?'sepL':''}">${l}</th>`).join('')}<th class="sepL">SPLIT&lt;40</th><th>CAL&lt;40</th></tr>`;
   const show=rows.filter(r=>r.role!=='empty');
@@ -313,6 +345,7 @@ function fillComputedMass(){
 
 // ---------- results ----------
 function renderRes(){
+  if(!$('res').querySelector('colgroup')) $('res').insertAdjacentHTML('afterbegin','<colgroup><col class="cid"><col span="18"></colgroup>');
   $('res').querySelector('thead').innerHTML=`<tr><th class="l idc">Ident</th><th>P_CHECK</th>${PL.map((l,i)=>`<th class="${i===0?'sepL':''}">${l}</th>`).join('')}${IDX.slice(1).map((l,i)=>`<th class="${i===0?'sepL':''}">${l}</th>`).join('')}</tr>`;
   const html=[];
   rows.forEach(r=>{
